@@ -1,0 +1,7 @@
+Git Commands:
+
+1. Adding Remote Repository
+  git remote add origin https://github.com/atul-dadhich/Python_Practice.git
+  git remote -v
+  git push origin master
+  # Provide the GitHub credentials if required.
