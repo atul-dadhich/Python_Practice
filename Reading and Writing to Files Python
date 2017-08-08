@@ -1,0 +1,87 @@
+import requests
+import json
+import csv
+from pprint import pprint
+
+def csv_writer_truncate(data, path):
+    with open(path, "w+") as csv_file:
+        writer = csv.writer(csv_file, delimiter=',', lineterminator='\n')
+        for row in data:
+            writer.writerow(row)
+
+
+def csv_writer(data, path):
+    with open(path, "a+") as csv_file:
+        writer = csv.writer(csv_file, delimiter=',', lineterminator='\n')
+        for row in data:
+            writer.writerow(row)
+
+
+def csv_dict_reader(file_obj):
+
+    reader = csv.DictReader(file_obj, delimiter=',')
+    for line in reader:
+
+        geteventid = (line["EventID"])
+        url1= "URL".format(geteventid)
+        url2= "URL"
+
+        url=url1+url2
+
+        """print(url)"""
+
+        eventobj = requests.get(url)
+        eventcheck=eventobj.status_code
+
+        if eventcheck ==(404):
+
+            print("Event ID "+ geteventid + " is not Found" )
+            eventid = geteventid
+            marketid = "<NOT-FOUND>"
+            selectionid = "<NOT-FOUND>"
+
+            logdata = [eventid, marketid, selectionid]
+
+            if __name__ == "__main__":
+                data = [logdata]
+                path = "Testdata.csv"
+                csv_writer(data, path)
+
+        else:
+
+            eventdata = eventobj.json()
+
+            pprint(eventdata)
+
+            """print json.dumps(eventdata, indent=2, sort_keys=False)"""
+
+
+
+            eventstatus = eventdata['event']['eventStatus']
+
+
+            if eventstatus == ("Active"):
+
+
+                eventid = eventdata['event']['eventKey']
+                marketid = eventdata['event']['markets']['market'][0]['marketKey']
+                selectionid = eventdata['event']['markets']['market'][0]['selections']['selection'][0]['selectionKey']
+
+
+                logdata = [eventid, marketid, selectionid]
+
+                if __name__ == "__main__":
+                 data = [logdata]
+                 path = "Testdata.csv"
+                 csv_writer(data, path)
+
+
+if __name__ == "__main__":
+    data = ["EventID,MarketID,SelectionID".split(",")]
+    path = "Testdata.csv"
+    csv_writer_truncate(data, path)
+
+
+if __name__ == "__main__":
+    with open("EventIds.csv") as f_obj:
+        csv_dict_reader(f_obj)
